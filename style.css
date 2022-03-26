@@ -1,0 +1,89 @@
+* {
+	box-sizing: border-box;
+	padding: 0;
+	margin: 0;
+}
+
+body {
+	width: 100%;
+	max-width: 128ch;
+
+	margin: 1rem auto;
+
+	font-family: "Open Sans", sans-serif;
+}
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+	margin-block: 0.5rem;
+}
+
+h1#page-title {
+	text-align: center;
+	margin-block: 1rem;
+	font-size: clamp(2rem, 10vh, 4rem);
+}
+
+#players {
+	display: flex;
+	justify-content: space-between;
+	align-items: flex-start;
+	gap: 1rem;
+	flex-wrap: wrap;
+}
+
+div.player {
+	width: 30%;
+
+	display: flex;
+	flex-direction: column;
+	justify-content: flex-start;
+	align-items: center;
+	gap: 0.5rem;
+}
+
+h2.title,
+h3.artist {
+	text-align: center;
+	margin: 0;
+	width: 100%;
+
+	text-overflow: ellipsis;
+	overflow: hidden;
+	white-space: nowrap;
+}
+
+h2.title {
+	font-weight: 500;
+}
+
+h3.artist {
+	color: gray;
+	font-weight: 400;
+}
+
+button.toggle {
+	width: 2rem;
+	height: 2rem;
+
+	border-radius: 2rem;
+	border: 0.25rem #00000088 solid;
+}
+
+button.toggle.loading {
+	background: lightskyblue;
+}
+
+button.toggle.play {
+	background: rgb(44, 240, 44);
+	color: #147014;
+}
+
+canvas.wave {
+	height: 8rem;
+	width: 100%;
+}
