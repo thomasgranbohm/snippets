@@ -1,7 +1,7 @@
 import fs from "fs/promises";
 import path from "path";
 import {
-	BeforeCreate,
+	BeforeDestroy,
 	Column,
 	DataType,
 	Default,
@@ -29,7 +29,23 @@ export class Snippet extends Model {
 
 	@Column(DataType.STRING)
 	mimetype!: string;
+
+	@Default(false)
+	@Column(DataType.BOOLEAN)
+	ready!: boolean;
+
+	// TODO: Does not work.
+	@BeforeDestroy
+	static async removeDirectory(instance: Snippet) {
+		console.log("Removing directory", instance.getPath());
+		await fs.rm(instance.getPath(), { force: true, recursive: true });
+	}
+
+	getPath() {
+		return path.resolve(process.cwd(), "snippets", this.id);
+	}
 }
+
 export async function createSnippet(
 	artist: string,
 	title: string,
@@ -37,19 +53,16 @@ export async function createSnippet(
 ): Promise<Snippet> {
 	const snippet = new Snippet({ title, artist, mimetype: file.mimetype });
 
-	const { id } = snippet;
-
-	const SNIPPET_PATH = path.resolve(process.cwd(), "snippets", id);
-
 	// Move audio
-	await fs.mkdir(SNIPPET_PATH);
+	await fs.mkdir(snippet.getPath());
 	await fs.rename(
 		path.resolve(process.cwd(), "uploads", file.filename),
-		path.resolve(SNIPPET_PATH, "audio")
+		path.resolve(snippet.getPath(), "audio")
 	);
 
 	// TODO: Create wave image
 
+	snippet.ready = true;
 	await snippet.save();
 
 	return snippet;

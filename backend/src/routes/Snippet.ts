@@ -25,6 +25,7 @@ router.get("/", Paginator, async (req, res) => {
 	const items = await Snippet.findAll({
 		limit: req.limit,
 		offset: req.offset,
+		where: { ready: true },
 	});
 
 	return res.json({
@@ -49,7 +50,9 @@ router.post("/", upload.single("audio"), async (req, res) => {
 });
 
 router.get("/:uuid", async (req, res) => {
-	const snippet = await Snippet.findOne({ where: { id: req.params.uuid } });
+	const snippet = await Snippet.findOne({
+		where: { id: req.params.uuid, ready: true },
+	});
 
 	if (!snippet) return res.status(404).send("Not found.");
 
@@ -59,7 +62,7 @@ router.get("/:uuid", async (req, res) => {
 router.get("/:uuid/audio", async (req, res) => {
 	const snippet = await Snippet.findOne({
 		attributes: ["id", "mimetype"],
-		where: { id: req.params.uuid },
+		where: { id: req.params.uuid, ready: true },
 	});
 
 	if (!snippet) return res.status(404).send("Not found.");
@@ -67,7 +70,7 @@ router.get("/:uuid/audio", async (req, res) => {
 	return stream(
 		req,
 		res,
-		resolve(process.cwd(), "snippets", snippet.id, "audio"),
+		resolve(snippet.getPath(), "audio"),
 		snippet.mimetype
 	);
 });
