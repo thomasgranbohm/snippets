@@ -1,11 +1,27 @@
 version: "3"
 services:
+  backend:
+    build: ./backend/
+    depends_on:
+      - database
+    environment:
+      - DATABASE_HOST=database
+    expose:
+      - 1337
+    ports:
+      - 1337:1337
+    volumes:
+      - ./backend/snippets:/home/node/app/snippets
+      - ./backend/uploads:/home/node/app/uploads
+    working_dir: /home/node/app
   database:
     image: postgres
     environment:
       POSTGRES_DB: snippets
       POSTGRES_USER: admin
       POSTGRES_PASSWORD: password
+    expose:
+      - 5432
     ports:
       - 5432:5432
     volumes:
