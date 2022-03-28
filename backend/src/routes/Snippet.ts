@@ -1,7 +1,10 @@
 import { Router } from "express";
-import Paginator from "../middlewares/Paginator";
+import fs from "fs/promises";
 import multer from "multer";
-import { Snippet } from "../database/models/Snippet";
+import { resolve } from "path";
+import { createSnippet, Snippet } from "../database/models/Snippet";
+import Paginator from "../middlewares/Paginator";
+import { stream } from "../services/Streamer";
 
 const FILE_TYPES = [
 	"audio/wav",
@@ -19,9 +22,16 @@ const upload = multer({
 });
 
 router.get("/", Paginator, async (req, res) => {
-	const snippets = await Snippet.findAll();
+	const items = await Snippet.findAll({
+		limit: req.limit,
+		offset: req.offset,
+	});
 
-	return res.json(snippets);
+	return res.json({
+		items,
+		limit: req.limit || 10,
+		offset: (req.offset || 0) + items.length,
+	});
 });
 
 router.post("/", upload.single("audio"), async (req, res) => {
@@ -33,10 +43,39 @@ router.post("/", upload.single("audio"), async (req, res) => {
 	if (!title || !artist)
 		res.status(400).jsonp({ error: "Missing title or artist" });
 
-	const snippet = new Snippet({ title, artist });
-	await snippet.save();
+	const snippet = await createSnippet(artist, title, req.file);
 
 	return res.jsonp(snippet);
+});
+
+router.get("/:uuid", async (req, res) => {
+	const snippet = await Snippet.findOne({ where: { id: req.params.uuid } });
+
+	if (!snippet) return res.status(404).send("Not found.");
+
+	return res.jsonp(snippet);
+});
+
+router.get("/:uuid/audio", async (req, res) => {
+	const snippet = await Snippet.findOne({
+		attributes: ["id", "mimetype"],
+		where: { id: req.params.uuid },
+	});
+
+	if (!snippet) return res.status(404).send("Not found.");
+
+	return stream(
+		req,
+		res,
+		resolve(process.cwd(), "snippets", snippet.id, "audio"),
+		snippet.mimetype
+	);
+});
+
+router.delete("/:uuid", async (req, res) => {
+	await Snippet.destroy({ where: { id: req.params.uuid } });
+
+	return res.status(200).send("Removed.");
 });
 
 export default router;

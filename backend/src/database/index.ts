@@ -9,12 +9,14 @@ const CONFIG: SequelizeOptions = {
 	database: DATABASE.NAME,
 	username: DATABASE.USERNAME,
 	password: DATABASE.PASSWORD,
-	logging: console.log,
+	logging: process.env.NODE_ENV !== "production" && console.debug,
 	sync: { force: true },
 	models: [Snippet],
 };
 
 export const connect = async () => {
 	const db = new Sequelize(CONFIG);
-	await db.sync();
+	if (process.env.NODE_ENV !== "production") {
+		await db.sync();
+	}
 };
