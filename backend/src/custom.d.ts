@@ -4,3 +4,5 @@ declare module Express {
 		offset?: number;
 	}
 }
+
+declare module "web-audio-api";

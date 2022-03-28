@@ -1,5 +1,8 @@
 # Dependencies stage
-FROM node:16-alpine AS dependencies
+FROM node:16 AS dependencies
+
+RUN apt-get -y update && \
+    apt-get -y install build-essential libcairo2-dev libpango1.0-dev libjpeg-dev libgif-dev librsvg2-dev
 
 WORKDIR /home/node/app
 
@@ -8,7 +11,10 @@ COPY package.json package-lock.json ./
 RUN npm ci
 
 # Build stage
-FROM node:16-alpine AS build
+FROM node:16 AS build
+
+RUN apt-get -y update && \
+    apt-get -y install build-essential libcairo2-dev libpango1.0-dev libjpeg-dev libgif-dev librsvg2-dev
 
 WORKDIR /home/node/app
 COPY package.json package-lock.json tsconfig.json ./
