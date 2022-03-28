@@ -1,0 +1,53 @@
+.container {
+	width: 30%;
+
+	display: flex;
+	flex-direction: column;
+	justify-content: flex-start;
+	align-items: center;
+	gap: 0.5rem;
+
+	.title,
+	.artist,
+	.bpm {
+		text-align: center;
+		margin: 0;
+		width: 100%;
+
+		text-overflow: ellipsis;
+		overflow: hidden;
+		white-space: nowrap;
+	}
+
+	.title {
+		font-weight: 500;
+	}
+
+	.artist,
+	.bpm {
+		color: gray;
+		font-weight: 400;
+	}
+
+	.button {
+		width: 2rem;
+		height: 2rem;
+
+		border-radius: 2rem;
+		border: 0.25rem #00000088 solid;
+	}
+
+	.wave {
+		height: 8rem;
+		width: 100%;
+	}
+
+	&.active .button {
+		background: rgb(44, 240, 44);
+		color: #147014;
+	}
+
+	&.loading .button {
+		background: lightskyblue;
+	}
+}

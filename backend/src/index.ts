@@ -1,3 +1,4 @@
+import cors from "cors";
 import express from "express";
 import { connect } from "./database";
 
@@ -6,6 +7,7 @@ import SnippetRouter from "./routes/Snippet";
 
 const server = express();
 
+server.use(cors());
 server.use(express.json());
 
 // Routes

@@ -1,0 +1,13 @@
+.title {
+	text-align: center;
+	margin-block: 1rem;
+	font-size: clamp(2rem, 10vh, 4rem);
+}
+
+.players {
+	display: flex;
+	justify-content: space-between;
+	align-items: flex-start;
+	gap: 1rem;
+	flex-wrap: wrap;
+}
