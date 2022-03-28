@@ -25,6 +25,7 @@ router.get("/", Paginator, async (req, res) => {
 	const items = await Snippet.findAll({
 		limit: req.limit,
 		offset: req.offset,
+		order: [["createdAt", "DESC"]],
 		where: { ready: true },
 	});
 
@@ -39,12 +40,15 @@ router.post("/", upload.single("audio"), async (req, res) => {
 	if (!req.file)
 		return res.status(400).jsonp({ error: "File not allowed or found." });
 
-	const { title, artist } = req.body;
+	const { title, artist, bpm } = req.body;
 
-	if (!title || !artist)
-		res.status(400).jsonp({ error: "Missing title or artist" });
+	if (!title || !artist || !bpm)
+		return res.status(400).jsonp({ error: "Missing parameter" });
 
-	const snippet = await createSnippet(artist, title, req.file);
+	if (!Number.isInteger(parseInt(bpm)))
+		return res.status(400).jsonp({ error: "BPM is not a number" });
+
+	const snippet = await createSnippet(artist, title, parseInt(bpm), req.file);
 
 	return res.jsonp(snippet);
 });

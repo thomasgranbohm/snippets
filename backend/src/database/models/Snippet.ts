@@ -6,6 +6,8 @@ import {
 	DataType,
 	Default,
 	IsUUID,
+	Max,
+	Min,
 	Model,
 	PrimaryKey,
 	Table,
@@ -26,6 +28,11 @@ export class Snippet extends Model {
 
 	@Column(DataType.STRING)
 	title!: string;
+
+	@Max(1024)
+	@Min(0)
+	@Column(DataType.INTEGER)
+	bpm!: number;
 
 	@Column(DataType.STRING)
 	mimetype!: string;
@@ -49,16 +56,23 @@ export class Snippet extends Model {
 export async function createSnippet(
 	artist: string,
 	title: string,
+	bpm: number,
 	file: Express.Multer.File
 ): Promise<Snippet> {
-	const snippet = new Snippet({ title, artist, mimetype: file.mimetype });
+	const snippet = new Snippet({
+		title,
+		artist,
+		bpm,
+		mimetype: file.mimetype,
+	});
 
 	// Move audio
 	await fs.mkdir(snippet.getPath());
-	await fs.rename(
+	await fs.cp(
 		path.resolve(process.cwd(), "uploads", file.filename),
 		path.resolve(snippet.getPath(), "audio")
 	);
+	await fs.rm(path.resolve(process.cwd(), "uploads", file.filename));
 
 	// TODO: Create wave image
 
