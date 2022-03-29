@@ -98,7 +98,41 @@ router.get("/:uuid/image", async (req, res) => {
 		.sendFile(resolve(snippet.getPath(), "image"));
 });
 
-router.delete("/:uuid", async (req, res) => {
+router.put(
+	"/:uuid",
+	Authorization,
+	upload.single("audio"),
+	async (req, res) => {
+		const snippet = await Snippet.findOne({
+			where: { id: req.params.uuid, ready: true },
+		});
+
+		if (!snippet) return res.status(404).send("Not found.");
+
+		const { title, artist, bpm } = req.body;
+
+		if (!title || !artist || !bpm)
+			return res.status(400).jsonp({ error: "Missing parameter" });
+
+		if (!Number.isInteger(parseInt(bpm)))
+			return res.status(400).jsonp({ error: "BPM is not a number" });
+
+		await snippet.update({
+			title,
+			artist,
+			bpm,
+		});
+		await snippet.save();
+
+		res.jsonp(snippet);
+
+		if (req.file) {
+			snippet.parseFile(req.file);
+		}
+	}
+);
+
+router.delete("/:uuid", Authorization, async (req, res) => {
 	await Snippet.destroy({ where: { id: req.params.uuid } });
 
 	return res.status(200).send("Removed.");
