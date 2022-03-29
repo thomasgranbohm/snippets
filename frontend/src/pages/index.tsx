@@ -100,7 +100,7 @@ const Homepage = (props) => {
 				)}
 			</article>
 			<footer className={classes["footer"]}>
-				<a href="https://github.com/thomasgranbohm/snippet">
+				<a href="https://github.com/thomasgranbohm/snippets">
 					Source code
 				</a>
 			</footer>
