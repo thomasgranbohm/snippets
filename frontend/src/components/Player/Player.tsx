@@ -1,7 +1,6 @@
 import clsx from "clsx";
-import { resolve } from "path";
 import { useState } from "react";
-import { EXTERNAL_BASE_URL } from "../../constants";
+import { PUBLIC_API } from "../../constants";
 import { ISnippet } from "../../types";
 import classes from "./Player.module.scss";
 
@@ -24,13 +23,10 @@ const Player = ({
 		if (active) return onClick(id);
 
 		setLoading(true);
-		const resp = await fetch(
-			EXTERNAL_BASE_URL + "snippets/" + id + "/audio",
-			{
-				mode: "cors",
-			}
-		);
-		const buffer = await resp.arrayBuffer();
+		const resp = await PUBLIC_API.get("snippets/" + id + "/audio", {
+			responseType: "arraybuffer",
+		});
+		const buffer = resp.data;
 		setLoading(false);
 		onClick(id, buffer);
 	};
@@ -47,9 +43,7 @@ const Player = ({
 				className={classes["image-container"]}
 				style={
 					{
-						"--source": `url("${
-							EXTERNAL_BASE_URL + "snippets/" + id + "/image"
-						}")`,
+						"--source": `url("${PUBLIC_API.defaults.baseURL}/snippets/${id}/image")`,
 						"--duration": `${duration}ms`,
 					} as React.CSSProperties
 				}

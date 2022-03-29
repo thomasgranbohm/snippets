@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from "react";
+import { LegacyRef, useEffect, useRef, useState } from "react";
 
 export const concat = (...classes: Array<string | [unknown, any] | unknown>) =>
 	classes
@@ -12,13 +12,13 @@ export const concat = (...classes: Array<string | [unknown, any] | unknown>) =>
 		.filter((c) => !!c)
 		.join(" ");
 
-export const useObserver = (
+export const useObserver = <T extends HTMLElement>(
 	callback: () => {},
 	options: {
 		shouldStop?: boolean;
 	} & IntersectionObserverInit
-) => {
-	const ref = useRef(null);
+): [LegacyRef<T>, boolean] => {
+	const ref = useRef<T>(null);
 	const [loading, setLoading] = useState(false);
 
 	const { shouldStop, ...rest } = options;
@@ -49,19 +49,5 @@ export const useObserver = (
 		};
 	});
 
-	const sentinel = !shouldStop && (
-		<div
-			ref={ref}
-			style={{
-				display: "flex",
-				justifyContent: "center",
-				padding: "2rem",
-				width: "100%",
-			}}
-		>
-			Loading...
-		</div>
-	);
-
-	return sentinel;
+	return [ref, !!shouldStop];
 };

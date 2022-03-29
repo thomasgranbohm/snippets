@@ -1,16 +1,14 @@
 import axios from "axios";
 import { GetStaticProps } from "next";
-import { useEffect, useState } from "react";
+import { LegacyRef, useEffect, useState } from "react";
 import Player from "../components/Player/Player";
 import { ISnippet } from "../types";
 import classes from "../styles/Homepage.module.scss";
 import { useObserver } from "../functions";
-import { EXTERNAL_BASE_URL } from "../constants";
+import { PRIVATE_API, PUBLIC_API } from "../constants";
 
 export const getStaticProps: GetStaticProps = async (context) => {
-	const { data } = await axios.get("http://localhost:1337/snippets");
-
-	console.log(data);
+	const { data } = await PRIVATE_API.get("snippets");
 
 	return {
 		props: data,
@@ -59,9 +57,9 @@ const Homepage = (props) => {
 		setContext(new AudioContext());
 	}, []);
 
-	const sentinel = useObserver(
+	const [ref, shouldStop] = useObserver(
 		async () => {
-			const { data } = await axios.get(EXTERNAL_BASE_URL + "snippets", {
+			const { data } = await PUBLIC_API.get("snippets", {
 				params: {
 					offset: items.length,
 				},
@@ -87,7 +85,19 @@ const Homepage = (props) => {
 						/>
 					))}
 				</div>
-				{sentinel}
+				{!shouldStop && (
+					<div
+						ref={ref as LegacyRef<HTMLDivElement>}
+						style={{
+							display: "flex",
+							justifyContent: "center",
+							padding: "2rem",
+							width: "100%",
+						}}
+					>
+						Loading...
+					</div>
+				)}
 			</article>
 			<footer className={classes["footer"]}>
 				<a href="https://github.com/thomasgranbohm/snippet">
