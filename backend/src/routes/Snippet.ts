@@ -88,7 +88,7 @@ router.get("/:uuid/image", async (req, res) => {
 	if (!snippet) return res.status(404).send("Not found.");
 
 	return res
-		.setHeader("Content-Type", "image/png")
+		.setHeader("Content-Type", "image/svg+xml")
 		.sendFile(resolve(snippet.getPath(), "image"));
 });
 

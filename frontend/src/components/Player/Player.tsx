@@ -1,4 +1,5 @@
 import clsx from "clsx";
+import { resolve } from "path";
 import { useState } from "react";
 import { EXTERNAL_BASE_URL } from "../../constants";
 import { ISnippet } from "../../types";
@@ -9,7 +10,15 @@ interface PlayerProps extends ISnippet {
 	onClick: Function;
 }
 
-const Player = ({ active, artist, bpm, id, onClick, title }: PlayerProps) => {
+const Player = ({
+	active,
+	artist,
+	bpm,
+	duration,
+	id,
+	onClick,
+	title,
+}: PlayerProps) => {
 	const [loading, setLoading] = useState<boolean>(false);
 	const localOnClick = async () => {
 		if (active) return onClick(id);
@@ -34,6 +43,17 @@ const Player = ({ active, artist, bpm, id, onClick, title }: PlayerProps) => {
 				loading && classes["loading"]
 			)}
 		>
+			<div
+				className={classes["image-container"]}
+				style={
+					{
+						"--source": `url("${
+							EXTERNAL_BASE_URL + "snippets/" + id + "/image"
+						}")`,
+						"--duration": `${duration}ms`,
+					} as React.CSSProperties
+				}
+			/>
 			<button
 				className={classes["button"]}
 				onClick={localOnClick}

@@ -36,6 +36,9 @@ export class Snippet extends Model {
 	@Column(DataType.INTEGER)
 	bpm!: number;
 
+	@Column(DataType.FLOAT)
+	duration?: number;
+
 	@Column(DataType.STRING)
 	mimetype!: string;
 
@@ -86,6 +89,7 @@ export async function createSnippet(
 	const audioBuffer: AudioBuffer = await new Promise((res) =>
 		context.decodeAudioData(buffer, (b: AudioBuffer) => res(b))
 	);
+	snippet.duration = parseFloat((audioBuffer.duration * 1e3).toFixed(4));
 	const imageBuffer = await generateImage(audioBuffer);
 
 	await fs.writeFile(path.resolve(snippet.getPath(), "image"), imageBuffer);
@@ -99,18 +103,18 @@ export async function createSnippet(
 const generateImage = (buffer: AudioBuffer): Buffer => {
 	const peaks = buffer.getChannelData(0);
 
-	const canvas = createCanvas(1024, 512);
+	const canvas = createCanvas(1024, 512, "svg");
 	const c = canvas.getContext("2d");
 
 	const steps = 2 ** 6;
 
 	const bps = peaks.length / steps;
-	const xs = canvas.width / Math.ceil(steps);
+	const xs = canvas.width / steps;
 
 	const highest = peaks.map(Math.abs).reduce((a, b) => (a > b ? a : b), 0);
 
 	c.fillStyle = "#707070";
-	for (let i = 0; i <= Math.ceil(steps); i += 1) {
+	for (let i = 0; i <= steps; i += 1) {
 		const bufferStart = bps * i;
 		const slice = peaks.slice(bufferStart, bufferStart + bps).map(Math.abs);
 		const sum = slice.reduce((p, c) => c + p, 0) / bps;
@@ -119,9 +123,10 @@ const generateImage = (buffer: AudioBuffer): Buffer => {
 
 		const x = xs * i,
 			y = (canvas.height - h) / 2;
-		c.rect(x + xs, y, xs * 0.8, h);
+
+		c.rect(x, y, xs * 0.8, h);
 	}
 	c.fill();
 
-	return canvas.toBuffer("image/png");
+	return canvas.toBuffer();
 };

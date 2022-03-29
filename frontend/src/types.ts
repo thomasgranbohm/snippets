@@ -3,4 +3,5 @@ export interface ISnippet {
 	title: string;
 	artist: string;
 	bpm: number;
+	duration: number;
 }
