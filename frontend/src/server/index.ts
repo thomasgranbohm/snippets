@@ -15,7 +15,7 @@ app.prepare().then(() => {
 			const parsedUrl = parse(req.url || "", true);
 			const { pathname } = parsedUrl;
 
-			if (!pathname?.startsWith("/v1")) {
+			if (!pathname?.includes("/v1/")) {
 				await handle(req, res, parsedUrl);
 			}
 		} catch (err) {
