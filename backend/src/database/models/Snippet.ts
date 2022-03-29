@@ -56,48 +56,37 @@ export class Snippet extends Model {
 	getPath() {
 		return path.resolve(process.cwd(), "snippets", this.id);
 	}
-}
 
-export async function createSnippet(
-	artist: string,
-	title: string,
-	bpm: number,
-	file: Express.Multer.File
-): Promise<Snippet> {
-	const snippet = new Snippet({
-		title,
-		artist,
-		bpm,
-		mimetype: file.mimetype,
-	});
+	async parseFile(file: Express.Multer.File): Promise<Snippet> {
+		this.mimetype = file.mimetype;
+		// Move audio
+		await fs.mkdir(this.getPath());
+		await fs.cp(
+			path.resolve(process.cwd(), "uploads", file.filename),
+			path.resolve(this.getPath(), "audio")
+		);
+		await fs.rm(path.resolve(process.cwd(), "uploads", file.filename));
 
-	// Move audio
-	await fs.mkdir(snippet.getPath());
-	await fs.cp(
-		path.resolve(process.cwd(), "uploads", file.filename),
-		path.resolve(snippet.getPath(), "audio")
-	);
-	await fs.rm(path.resolve(process.cwd(), "uploads", file.filename));
+		// Create wave image
+		const context = new AudioContext();
+		const buffer = Buffer.from(
+			await fs.readFile(path.resolve(this.getPath(), "audio"), "binary"),
+			"binary"
+		);
 
-	// TODO: Create wave image
-	const context = new AudioContext();
-	const buffer = Buffer.from(
-		await fs.readFile(path.resolve(snippet.getPath(), "audio"), "binary"),
-		"binary"
-	);
+		const audioBuffer: AudioBuffer = await new Promise((res) =>
+			context.decodeAudioData(buffer, (b: AudioBuffer) => res(b))
+		);
+		this.duration = parseFloat((audioBuffer.duration * 1e3).toFixed(4));
+		const imageBuffer = await generateImage(audioBuffer);
 
-	const audioBuffer: AudioBuffer = await new Promise((res) =>
-		context.decodeAudioData(buffer, (b: AudioBuffer) => res(b))
-	);
-	snippet.duration = parseFloat((audioBuffer.duration * 1e3).toFixed(4));
-	const imageBuffer = await generateImage(audioBuffer);
+		await fs.writeFile(path.resolve(this.getPath(), "image"), imageBuffer);
 
-	await fs.writeFile(path.resolve(snippet.getPath(), "image"), imageBuffer);
+		this.ready = true;
+		await this.save();
 
-	snippet.ready = true;
-	await snippet.save();
-
-	return snippet;
+		return this;
+	}
 }
 
 const generateImage = (buffer: AudioBuffer): Buffer => {

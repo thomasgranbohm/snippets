@@ -1,7 +1,7 @@
 import { Router } from "express";
 import multer from "multer";
 import { resolve } from "path";
-import { createSnippet, Snippet } from "../database/models/Snippet";
+import { Snippet } from "../database/models/Snippet";
 import Authorization from "../middlewares/Authorization";
 import Paginator from "../middlewares/Paginator";
 import { stream } from "../services/Streamer";
@@ -52,9 +52,11 @@ router.post("/", Authorization, upload.single("audio"), async (req, res) => {
 	if (!Number.isInteger(parseInt(bpm)))
 		return res.status(400).jsonp({ error: "BPM is not a number" });
 
-	const snippet = await createSnippet(artist, title, parseInt(bpm), req.file);
+	const snippet = new Snippet({ artist, title, bpm: parseInt(bpm) });
 
-	return res.jsonp(snippet);
+	res.jsonp(snippet);
+
+	snippet.parseFile(req.file);
 });
 
 router.get("/:uuid", async (req, res) => {
