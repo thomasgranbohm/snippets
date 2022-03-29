@@ -4,6 +4,7 @@ services:
     build: ./backend/
     depends_on:
       - database
+    env_file: ./config/backend.env
     environment:
       - DATABASE_HOST=database
       - NODE_ENV=production

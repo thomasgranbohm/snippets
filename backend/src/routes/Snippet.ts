@@ -2,6 +2,7 @@ import { Router } from "express";
 import multer from "multer";
 import { resolve } from "path";
 import { createSnippet, Snippet } from "../database/models/Snippet";
+import Authorization from "../middlewares/Authorization";
 import Paginator from "../middlewares/Paginator";
 import { stream } from "../services/Streamer";
 
@@ -39,7 +40,7 @@ router.get("/", Paginator, async (req, res) => {
 	});
 });
 
-router.post("/", upload.single("audio"), async (req, res) => {
+router.post("/", Authorization, upload.single("audio"), async (req, res) => {
 	if (!req.file)
 		return res.status(400).jsonp({ error: "File not allowed or found." });
 
