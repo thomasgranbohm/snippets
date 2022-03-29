@@ -111,10 +111,7 @@ router.put(
 
 		const { title, artist, bpm } = req.body;
 
-		if (!title || !artist || !bpm)
-			return res.status(400).jsonp({ error: "Missing parameter" });
-
-		if (!Number.isInteger(parseInt(bpm)))
+		if (bpm && !Number.isInteger(parseInt(bpm)))
 			return res.status(400).jsonp({ error: "BPM is not a number" });
 
 		snippet.title = title;
