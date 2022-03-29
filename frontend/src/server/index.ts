@@ -15,9 +15,10 @@ app.prepare().then(() => {
 			const parsedUrl = parse(req.url || "", true);
 			const { pathname } = parsedUrl;
 
-			if (!pathname?.includes("/v1/")) {
-				await handle(req, res, parsedUrl);
+			if (!pathname?.includes("/v1")) {
+				return await handle(req, res, parsedUrl);
 			}
+			res.end("nope did not work");
 		} catch (err) {
 			console.error("Error occurred handling", req.url, err);
 			res.statusCode = 500;
