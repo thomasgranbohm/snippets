@@ -76,9 +76,9 @@ const Homepage = (props) => {
 			</header>
 			<article>
 				<div className={classes["players"]}>
-					{items.map((snippet, key) => (
+					{items.map((snippet) => (
 						<Player
-							key={key}
+							key={snippet.id}
 							active={activeItem === snippet.id}
 							onClick={onClick}
 							{...snippet}
