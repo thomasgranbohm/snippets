@@ -4,6 +4,8 @@ import { useEffect, useState } from "react";
 import Player from "../components/Player/Player";
 import { ISnippet } from "../types";
 import classes from "../styles/Homepage.module.scss";
+import { useObserver } from "../functions";
+import { EXTERNAL_BASE_URL } from "../constants";
 
 export const getStaticProps: GetStaticProps = async (context) => {
 	const { data } = await axios.get("http://localhost:1337/snippets");
@@ -57,20 +59,42 @@ const Homepage = (props) => {
 		setContext(new AudioContext());
 	}, []);
 
+	const sentinel = useObserver(
+		async () => {
+			const { data } = await axios.get(EXTERNAL_BASE_URL + "snippets", {
+				params: {
+					offset: items.length,
+				},
+			});
+			setItems([...items, ...data.items]);
+		},
+		{ shouldStop: items.length >= props.total }
+	);
+
 	return (
-		<div className={classes["container"]}>
-			<h1 className={classes["title"]}>Snippets</h1>
-			<div className={classes["players"]}>
-				{items.map((snippet, key) => (
-					<Player
-						key={key}
-						active={activeItem === snippet.id}
-						onClick={onClick}
-						{...snippet}
-					/>
-				))}
-			</div>
-		</div>
+		<main className={classes["container"]}>
+			<header className={classes["header"]}>
+				<h1 className={classes["title"]}>Snippets</h1>
+			</header>
+			<article>
+				<div className={classes["players"]}>
+					{items.map((snippet, key) => (
+						<Player
+							key={key}
+							active={activeItem === snippet.id}
+							onClick={onClick}
+							{...snippet}
+						/>
+					))}
+				</div>
+				{sentinel}
+			</article>
+			<footer className={classes["footer"]}>
+				<a href="https://github.com/thomasgranbohm/snippet">
+					Source code
+				</a>
+			</footer>
+		</main>
 	);
 };
 

@@ -1,5 +1,4 @@
 import { Router } from "express";
-import fs from "fs/promises";
 import multer from "multer";
 import { resolve } from "path";
 import { createSnippet, Snippet } from "../database/models/Snippet";
@@ -28,11 +27,15 @@ router.get("/", Paginator, async (req, res) => {
 		order: [["createdAt", "DESC"]],
 		where: { ready: true },
 	});
+	const total = await Snippet.count({
+		where: { ready: true },
+	});
 
 	return res.json({
 		items,
 		limit: req.limit || 10,
 		offset: (req.offset || 0) + items.length,
+		total,
 	});
 });
 
