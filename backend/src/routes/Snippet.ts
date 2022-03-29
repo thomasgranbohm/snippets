@@ -114,9 +114,9 @@ router.put(
 		if (bpm && !Number.isInteger(parseInt(bpm)))
 			return res.status(400).jsonp({ error: "BPM is not a number" });
 
-		snippet.title = title;
-		snippet.artist = artist;
-		snippet.bpm = parseInt(bpm);
+		if (title) snippet.title = title;
+		if (artist) snippet.artist = artist;
+		if (bpm) snippet.bpm = parseInt(bpm);
 
 		await snippet.save();
 
