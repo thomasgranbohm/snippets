@@ -1,11 +1,10 @@
-import axios from "axios";
 import { GetStaticProps } from "next";
 import { LegacyRef, useEffect, useState } from "react";
 import Player from "../components/Player/Player";
-import { ISnippet } from "../types";
-import classes from "../styles/Homepage.module.scss";
-import { useObserver } from "../functions";
 import { PRIVATE_API, PUBLIC_API } from "../constants";
+import { useObserver } from "../functions";
+import classes from "../styles/pages/Home.module.scss";
+import { ISnippet } from "../types";
 
 export const getStaticProps: GetStaticProps = async (context) => {
 	const { data } = await PRIVATE_API.get("snippets");
