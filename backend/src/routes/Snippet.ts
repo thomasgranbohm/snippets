@@ -9,6 +9,7 @@ import { stream } from "../services/Streamer";
 const FILE_TYPES = [
 	"audio/wav",
 	"audio/wave",
+	"audio/x-wav",
 	"audio/ogg",
 	"audio/mpeg",
 	"audio/mpeg3",
@@ -54,7 +55,7 @@ router.post("/", Authorization, upload.single("audio"), async (req, res) => {
 
 	const snippet = new Snippet({ artist, title, bpm: parseInt(bpm) });
 
-	res.jsonp(snippet);
+	res.status(201).jsonp(snippet);
 
 	snippet.parseFile(req.file);
 });
