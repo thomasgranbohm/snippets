@@ -52,7 +52,11 @@ const Player = ({
 				className={classes["button"]}
 				onClick={localOnClick}
 				aria-label="Play / Stop"
-			></button>
+			>
+				<span className={"material-icons"}>
+					{loading ? "more_horiz" : active ? "stop" : "play_arrow"}
+				</span>
+			</button>
 			<h2 className={classes["title"]} title={title}>
 				{title}
 			</h2>
