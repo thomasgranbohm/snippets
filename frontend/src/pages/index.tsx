@@ -34,11 +34,15 @@ const Homepage = (props) => {
 		setNode(localNode);
 	};
 
-	const onClick = async (
+	const onClick = (
 		uuid: string,
 		buffer: ArrayBuffer | undefined = undefined
 	) => {
-		if (!context) return;
+		if (!context) return false;
+
+		if (context.state === "suspended") {
+			context.resume();
+		}
 
 		if (node) {
 			node.stop();
@@ -50,6 +54,7 @@ const Homepage = (props) => {
 		} else {
 			setActiveItem(null);
 		}
+		return true;
 	};
 
 	useEffect(() => {
