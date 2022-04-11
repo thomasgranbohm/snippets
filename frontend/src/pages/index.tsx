@@ -18,48 +18,43 @@ export const getStaticProps: GetStaticProps = async (context) => {
 const Homepage = (props) => {
 	const [items, setItems] = useState<ISnippet[]>(props.items);
 	const [activeItem, setActiveItem] = useState<string | null>(null);
-	const [node, setNode] = useState<AudioBufferSourceNode>();
 	const [context, setContext] = useState<AudioContext>();
+	const [node, setNode] = useState<AudioBufferSourceNode>();
 
-	const play = (buffer: AudioBuffer) => {
-		if (!context) return;
+	const onClick = async (uuid: string, buffer: ArrayBuffer | null = null) => {
+		const c = context || new AudioContext();
 
-		const localNode = context.createBufferSource();
-		localNode.buffer = buffer;
-
-		localNode.connect(context.destination);
-		localNode.loop = true;
-		localNode.start();
-
-		setNode(localNode);
-	};
-
-	const onClick = (
-		uuid: string,
-		buffer: ArrayBuffer | undefined = undefined
-	) => {
-		if (!context) return false;
-
-		if (context.state === "suspended") {
-			context.resume();
+		if (c.state === "suspended") {
+			await c.resume();
 		}
 
 		if (node) {
 			node.stop();
 		}
 
+		const play = (buffer: AudioBuffer) => {
+			const localNode = c.createBufferSource();
+			localNode.buffer = buffer;
+
+			localNode.connect(c.destination);
+			localNode.loop = true;
+			localNode.start();
+
+			setNode(localNode);
+			setContext(c);
+		};
+
 		if (uuid !== activeItem && !!buffer) {
-			context.decodeAudioData(buffer, play);
+			c.decodeAudioData(buffer, play);
 			setActiveItem(uuid);
 		} else {
 			setActiveItem(null);
 		}
-		return true;
 	};
 
 	useEffect(() => {
-		setContext(new AudioContext());
-	}, []);
+		console.log("Updated AudioContext", context);
+	}, [context]);
 
 	const [ref, shouldStop] = useObserver(
 		async () => {
