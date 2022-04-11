@@ -5,7 +5,6 @@ import { useEffect } from "react";
 
 function CustomApp({ Component, pageProps }: AppProps) {
 	useEffect(() => {
-		console.log("serviceWorker" in navigator);
 		if ("serviceWorker" in navigator) {
 			navigator.serviceWorker.register("/sw.js");
 		}

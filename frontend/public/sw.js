@@ -3,6 +3,10 @@ const CACHES = [
 		name: "snippets-images",
 		regex: /\/snippets\/([0-9a-zA-Z\-]+)\/image$/,
 	},
+	{
+		name: "snippets-audios",
+		regex: /\/snippets\/([0-9a-zA-Z\-]+)\/audio$/,
+	},
 ];
 
 self.addEventListener("install", (event) => {
@@ -16,7 +20,9 @@ self.addEventListener("fetch", (event) => {
 		caches
 			.match(event.request)
 			.then((resp) => {
-				if (resp) return resp;
+				if (resp) {
+					return resp;
+				}
 
 				return fetch(event.request).then((response) => {
 					if (
