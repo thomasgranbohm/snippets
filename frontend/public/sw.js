@@ -22,6 +22,7 @@ self.addEventListener("fetch", (event) => {
 					if (
 						!response ||
 						response.status !== 200 ||
+						response.status !== 304 ||
 						response.type !== "basic"
 					) {
 						return response;
