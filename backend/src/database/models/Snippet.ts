@@ -1,4 +1,5 @@
 import { createCanvas } from "canvas";
+import { constants } from "fs";
 import fs from "fs/promises";
 import path from "path";
 import {
@@ -59,11 +60,22 @@ export class Snippet extends Model {
 
 	async parseFile(file: Express.Multer.File): Promise<Snippet> {
 		this.mimetype = file.mimetype;
+
+		try {
+			await fs.access(this.getPath(), constants.R_OK | constants.W_OK);
+			// Directory exists
+		} catch (error) {
+			// Directory doesn't exist
+		}
+
 		// Move audio
 		await fs.mkdir(this.getPath());
 		await fs.cp(
 			path.resolve(process.cwd(), "uploads", file.filename),
-			path.resolve(this.getPath(), "audio")
+			path.resolve(this.getPath(), "audio"),
+			{
+				force: true,
+			}
 		);
 		await fs.rm(path.resolve(process.cwd(), "uploads", file.filename));
 
