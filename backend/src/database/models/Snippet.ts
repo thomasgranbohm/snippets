@@ -62,14 +62,14 @@ export class Snippet extends Model {
 		this.mimetype = file.mimetype;
 
 		try {
-			await fs.access(this.getPath(), constants.R_OK | constants.W_OK);
 			// Directory exists
+			await fs.access(this.getPath(), constants.R_OK | constants.W_OK);
 		} catch (error) {
 			// Directory doesn't exist
+			await fs.mkdir(this.getPath());
 		}
 
 		// Move audio
-		await fs.mkdir(this.getPath());
 		await fs.cp(
 			path.resolve(process.cwd(), "uploads", file.filename),
 			path.resolve(this.getPath(), "audio"),
@@ -80,6 +80,15 @@ export class Snippet extends Model {
 		await fs.rm(path.resolve(process.cwd(), "uploads", file.filename));
 
 		// Create wave image
+		await this.generateImage();
+
+		this.ready = true;
+		await this.save();
+
+		return this;
+	}
+
+	async generateAudioBuffer(): Promise<AudioBuffer> {
 		const context = new AudioContext();
 		const buffer = Buffer.from(
 			await fs.readFile(path.resolve(this.getPath(), "audio"), "binary"),
@@ -90,44 +99,48 @@ export class Snippet extends Model {
 			context.decodeAudioData(buffer, (b: AudioBuffer) => res(b))
 		);
 		this.duration = parseFloat((audioBuffer.duration * 1e3).toFixed(4));
-		const imageBuffer = await generateImage(audioBuffer);
 
-		await fs.writeFile(path.resolve(this.getPath(), "image"), imageBuffer);
+		return audioBuffer;
+	}
 
-		this.ready = true;
-		await this.save();
+	async generateImage(): Promise<Snippet> {
+		const buffer = await this.generateAudioBuffer();
+
+		const peaks = buffer.getChannelData(0);
+
+		const canvas = createCanvas(1024, 512, "svg");
+		const c = canvas.getContext("2d");
+		c.fillStyle = "#707070";
+
+		const steps = 2 ** 6;
+		const bps = peaks.length / steps;
+		const xs = canvas.width / steps;
+		const heightmap = [];
+
+		for (let i = 0; i <= steps; i += 1) {
+			const bufferStart = bps * i;
+			const slice = peaks.slice(bufferStart, bufferStart + bps);
+			const sum = slice.map(Math.abs).reduce((p, c) => c + p, 0) / bps;
+
+			heightmap.push(sum);
+		}
+
+		const highest = Math.max(...heightmap);
+
+		for (let [i, height] of heightmap.entries()) {
+			const h = (height / highest) * canvas.height;
+			const x = xs * i,
+				y = (canvas.height - h) / 2;
+
+			c.rect(x, y, xs * 0.8, h);
+		}
+		c.fill();
+
+		await fs.writeFile(
+			path.resolve(this.getPath(), "image"),
+			canvas.toBuffer()
+		);
 
 		return this;
 	}
 }
-
-const generateImage = (buffer: AudioBuffer): Buffer => {
-	const peaks = buffer.getChannelData(0);
-
-	const canvas = createCanvas(1024, 512, "svg");
-	const c = canvas.getContext("2d");
-
-	const steps = 2 ** 6;
-
-	const bps = peaks.length / steps;
-	const xs = canvas.width / steps;
-
-	const highest = peaks.map(Math.abs).reduce((a, b) => (a > b ? a : b), 0);
-
-	c.fillStyle = "#707070";
-	for (let i = 0; i <= steps; i += 1) {
-		const bufferStart = bps * i;
-		const slice = peaks.slice(bufferStart, bufferStart + bps).map(Math.abs);
-		const sum = slice.reduce((p, c) => c + p, 0) / bps;
-
-		const h = (sum / highest) * (canvas.height * 2);
-
-		const x = xs * i,
-			y = (canvas.height - h) / 2;
-
-		c.rect(x, y, xs * 0.8, h);
-	}
-	c.fill();
-
-	return canvas.toBuffer();
-};
