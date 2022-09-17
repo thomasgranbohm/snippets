@@ -1,10 +1,13 @@
+import { useRouter } from "next/router";
 import { useRef, useState } from "react";
 import { PUBLIC_API } from "../constants";
 import { concat } from "../functions";
 import classes from "../styles/pages/Upload.module.scss";
 
 const UploadPage = () => {
-	const fileRef = useRef<HTMLInputElement>(null);
+	const ref = useRef<HTMLInputElement>(null);
+	const [fileName, setFileName] = useState<string>("");
+	const router = useRouter();
 
 	const [title, setTitle] = useState<string>("");
 	const [artist, setArtist] = useState<string>("");
@@ -26,15 +29,15 @@ const UploadPage = () => {
 			data.append("bpm", bpm);
 
 			if (
-				!fileRef.current ||
-				!fileRef.current.files ||
-				fileRef.current.files.length === 0
+				!ref.current ||
+				!ref.current.files ||
+				ref.current.files.length === 0
 			) {
 				alert("You need to select a file.");
 				return;
 			}
 
-			data.append("audio", fileRef.current.files[0]);
+			data.append("audio", ref.current.files.item(0));
 
 			const resp = await PUBLIC_API.post("/snippets", data, {
 				headers: {
@@ -44,12 +47,27 @@ const UploadPage = () => {
 			});
 
 			if (resp.status === 201) {
-				return alert("Snippet created!");
+				alert("Snippet created!");
+				return router.push("/");
 			}
 		} catch (error) {
 			alert("Something went wrong. Check the console.");
 			console.error(error);
 		}
+	};
+
+	const onInput = () => {
+		const files = ref.current?.files;
+		if (!files) {
+			return;
+		}
+
+		const file = files.item(0);
+		if (!file) {
+			return;
+		}
+
+		setFileName(file.name);
 	};
 
 	return (
@@ -62,15 +80,16 @@ const UploadPage = () => {
 					htmlFor="audio"
 					className={concat(classes["upload"], classes["label"])}
 				>
-					Upload file
+					{fileName || "Upload file"}
 				</label>
 				<input
-					ref={fileRef}
+					ref={ref}
 					type="file"
 					name="audio"
 					id="audio"
 					className={classes["upload"]}
 					accept="audio/wav, audio/wave, audio/ogg, audio/mpeg, audio/mpeg3"
+					onInput={onInput}
 				/>
 				<div className={classes["information"]}>
 					<label htmlFor="title">Title</label>
