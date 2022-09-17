@@ -37,7 +37,7 @@ const UploadPage = () => {
 				return;
 			}
 
-			data.append("audio", ref.current.files.item(0));
+			data.append("audio", ref.current.files[0]);
 
 			const resp = await PUBLIC_API.post("/snippets", data, {
 				headers: {
