@@ -1,7 +1,8 @@
-import "../styles/globals.scss";
 import type { AppProps } from "next/app";
 import Head from "next/head";
 import { useEffect } from "react";
+import ListeningProvider from "../contexts/ListeningContext";
+import "../styles/globals.scss";
 
 function CustomApp({ Component, pageProps }: AppProps) {
 	useEffect(() => {
@@ -11,12 +12,12 @@ function CustomApp({ Component, pageProps }: AppProps) {
 	}, []);
 
 	return (
-		<>
+		<ListeningProvider>
 			<Head>
 				<title>Snippets</title>
 			</Head>
 			<Component {...pageProps} />
-		</>
+		</ListeningProvider>
 	);
 }
 

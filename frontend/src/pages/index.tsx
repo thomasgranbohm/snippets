@@ -1,12 +1,12 @@
 import { GetStaticProps } from "next";
-import { LegacyRef, useEffect, useState } from "react";
+import { LegacyRef, useState } from "react";
 import Player from "../components/Player/Player";
 import { PRIVATE_API, PUBLIC_API } from "../constants";
 import { useObserver } from "../functions";
 import classes from "../styles/pages/Home.module.scss";
 import { ISnippet } from "../types";
 
-export const getStaticProps: GetStaticProps = async (context) => {
+export const getStaticProps: GetStaticProps = async () => {
 	const { data } = await PRIVATE_API.get("snippets");
 
 	return {
@@ -17,44 +17,6 @@ export const getStaticProps: GetStaticProps = async (context) => {
 
 const Homepage = (props) => {
 	const [items, setItems] = useState<ISnippet[]>(props.items);
-	const [activeItem, setActiveItem] = useState<string | null>(null);
-	const [context, setContext] = useState<AudioContext>();
-	const [node, setNode] = useState<AudioBufferSourceNode>();
-
-	const onClick = async (uuid: string, buffer: ArrayBuffer | null = null) => {
-		const c = context || new AudioContext();
-
-		if (c.state === "suspended") {
-			await c.resume();
-		}
-
-		if (node) {
-			node.stop();
-		}
-
-		const play = (buffer: AudioBuffer) => {
-			const localNode = c.createBufferSource();
-			localNode.buffer = buffer;
-
-			localNode.connect(c.destination);
-			localNode.loop = true;
-			localNode.start();
-
-			setNode(localNode);
-			setContext(c);
-		};
-
-		if (uuid !== activeItem && !!buffer) {
-			c.decodeAudioData(buffer, play);
-			setActiveItem(uuid);
-		} else {
-			setActiveItem(null);
-		}
-	};
-
-	useEffect(() => {
-		console.log("Updated AudioContext", context);
-	}, [context]);
 
 	const [ref, shouldStop] = useObserver(
 		async () => {
@@ -76,12 +38,7 @@ const Homepage = (props) => {
 			<article>
 				<div className={classes["players"]}>
 					{items.map((snippet) => (
-						<Player
-							key={snippet.id}
-							active={activeItem === snippet.id}
-							onClick={onClick}
-							{...snippet}
-						/>
+						<Player key={snippet.id} {...snippet} />
 					))}
 				</div>
 				{!shouldStop && (

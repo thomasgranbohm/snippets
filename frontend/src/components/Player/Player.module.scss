@@ -64,7 +64,7 @@
 		width: 100%;
 	}
 
-	&.active {
+	&.active:not(.loading) {
 		.image-container {
 			animation-name: gradient-animation;
 		}

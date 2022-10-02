@@ -1,42 +1,24 @@
 import clsx from "clsx";
-import { useState } from "react";
+import { useMemo } from "react";
 import { PUBLIC_API } from "../../constants";
+import { useListeningContext } from "../../contexts/ListeningContext";
 import { ISnippet } from "../../types";
 import classes from "./Player.module.scss";
 
-interface PlayerProps extends ISnippet {
-	active: boolean;
-	onClick: Function;
-}
+interface PlayerProps extends ISnippet {}
 
-const Player = ({
-	active,
-	artist,
-	bpm,
-	duration,
-	id,
-	onClick,
-	title,
-}: PlayerProps) => {
-	const [loading, setLoading] = useState<boolean>(false);
-	const localOnClick = async () => {
-		if (active) return onClick(id);
+const Player = ({ artist, bpm, duration, id, title }: PlayerProps) => {
+	const { activeItem, loading, onClick } = useListeningContext();
 
-		setLoading(true);
-		const resp = await PUBLIC_API.get("snippets/" + id + "/audio", {
-			responseType: "arraybuffer",
-		});
-		const buffer = resp.data;
-		setLoading(false);
-		onClick(id, buffer);
-	};
+	const isActive = useMemo(() => id === activeItem, [activeItem]);
+	const isLoading = useMemo(() => isActive && loading, [isActive, loading]);
 
 	return (
 		<div
 			className={clsx(
 				classes["container"],
-				active && classes["active"],
-				loading && classes["loading"]
+				isActive && classes["active"],
+				isLoading && classes["loading"]
 			)}
 		>
 			<div
@@ -50,11 +32,15 @@ const Player = ({
 			/>
 			<button
 				className={classes["button"]}
-				onClick={localOnClick}
+				onClick={() => onClick(id)}
 				aria-label="Play / Stop"
 			>
 				<span className={"material-icons"}>
-					{loading ? "more_horiz" : active ? "stop" : "play_arrow"}
+					{isLoading
+						? "more_horiz"
+						: isActive
+						? "stop"
+						: "play_arrow"}
 				</span>
 			</button>
 			<h2 className={classes["title"]} title={title}>
