@@ -85,7 +85,7 @@ const ListeningProvider: FC<ReactNode> = ({ children }) => {
 			try {
 				setLoading(true);
 				const { data } = await PUBLIC_API.get(
-					"snippets/" + uuid + "/audio",
+					"/snippets/" + uuid + "/audio",
 					{
 						responseType: "arraybuffer",
 						signal: controller.signal,

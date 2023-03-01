@@ -21,12 +21,16 @@ const Player = ({ artist, bpm, duration, id, title }: PlayerProps) => {
 				isLoading && classes["loading"]
 			)}
 		>
-			<a href={`/api/audio/${id}`} className={classes["link"]} download>
+			<a
+				href={`/api/snippets/${id}/audio`}
+				className={classes["link"]}
+				download
+			>
 				<div
 					className={classes["image-container"]}
 					style={
 						{
-							"--source": `url("/api/image/${id}")`,
+							"--source": `url("/api/snippets/${id}/image")`,
 							"--duration": `${duration}ms`,
 						} as React.CSSProperties
 					}
