@@ -31,8 +31,6 @@ const Player = ({ artist, bpm, duration, id, title }: PlayerProps) => {
 						} as React.CSSProperties
 					}
 				>
-					<div className={classes["image"]}></div>
-
 					<div className={classes["text"]}>
 						<span className={"material-icons"}>{"download"}</span>
 					</div>

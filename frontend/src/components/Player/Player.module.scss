@@ -35,7 +35,7 @@
 		height: 6rem;
 		position: relative;
 
-		.image,
+		&::before,
 		.text {
 			position: absolute;
 			top: 0;
@@ -44,7 +44,10 @@
 			bottom: 0;
 		}
 
-		.image {
+		&::before {
+			content: "";
+			display: block;
+
 			mask-image: var(--source);
 			mask-position: center;
 			mask-repeat: no-repeat;
@@ -98,7 +101,7 @@
 	}
 
 	&.active:not(.loading) {
-		.image-container {
+		.image-container::before {
 			animation-name: gradient-animation;
 		}
 		.button {
