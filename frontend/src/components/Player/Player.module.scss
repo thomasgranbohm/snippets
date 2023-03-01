@@ -33,19 +33,52 @@
 	.image-container {
 		width: 12rem;
 		height: 6rem;
+		position: relative;
 
-		mask-image: var(--source);
-		mask-position: center;
-		mask-repeat: no-repeat;
-		mask-size: contain;
+		.image,
+		.text {
+			position: absolute;
+			top: 0;
+			left: 0;
+			right: 0;
+			bottom: 0;
+		}
 
-		animation-duration: var(--duration, 1s);
-		animation-iteration-count: infinite;
-		animation-timing-function: linear;
+		.image {
+			mask-image: var(--source);
+			mask-position: center;
+			mask-repeat: no-repeat;
+			mask-size: contain;
 
-		background: linear-gradient(90deg, #fc772a 50%, gray 50%);
-		background-position: 100% 50%;
-		background-size: 200%;
+			animation-duration: var(--duration, 1s);
+			animation-iteration-count: infinite;
+			animation-timing-function: linear;
+
+			background: linear-gradient(90deg, #fc772a 50%, gray 50%);
+			background-position: 100% 50%;
+			background-size: 200%;
+		}
+
+		.text {
+			background: rgba(255 255 255 / 60%);
+			text-align: center;
+			opacity: 0;
+			transition: opacity 0.2s;
+			display: flex;
+			align-items: center;
+			justify-content: center;
+			color: #6d6d6f;
+		}
+	}
+
+	.link {
+		&:hover,
+		&:focus,
+		&:focus-within {
+			.text {
+				opacity: 100;
+			}
+		}
 	}
 
 	.button {

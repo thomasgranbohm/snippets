@@ -72,18 +72,13 @@ router.get("/:uuid", async (req, res) => {
 
 router.get("/:uuid/audio", async (req, res) => {
 	const snippet = await Snippet.findOne({
-		attributes: ["id", "mimetype"],
+		attributes: ["id", "mimetype", "artist", "title"],
 		where: { id: req.params.uuid, ready: true },
 	});
 
 	if (!snippet) return res.status(404).send("Not found.");
 
-	return stream(
-		req,
-		res,
-		resolve(snippet.getPath(), "audio"),
-		snippet.mimetype
-	);
+	return stream(req, res, snippet);
 });
 
 router.get("/:uuid/image", async (req, res) => {

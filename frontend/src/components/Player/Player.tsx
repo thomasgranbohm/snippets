@@ -21,15 +21,23 @@ const Player = ({ artist, bpm, duration, id, title }: PlayerProps) => {
 				isLoading && classes["loading"]
 			)}
 		>
-			<div
-				className={classes["image-container"]}
-				style={
-					{
-						"--source": `url("${PUBLIC_API.defaults.baseURL}/snippets/${id}/image")`,
-						"--duration": `${duration}ms`,
-					} as React.CSSProperties
-				}
-			/>
+			<a href={`/api/audio/${id}`} className={classes["link"]} download>
+				<div
+					className={classes["image-container"]}
+					style={
+						{
+							"--source": `url("/api/image/${id}")`,
+							"--duration": `${duration}ms`,
+						} as React.CSSProperties
+					}
+				>
+					<div className={classes["image"]}></div>
+
+					<div className={classes["text"]}>
+						<span className={"material-icons"}>{"download"}</span>
+					</div>
+				</div>
+			</a>
 			<button
 				className={classes["button"]}
 				onClick={() => onClick(id)}
