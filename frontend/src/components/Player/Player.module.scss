@@ -1,12 +1,10 @@
 .container {
-	width: 30%;
-	min-width: 12rem;
-
 	display: flex;
 	flex-direction: column;
 	justify-content: flex-start;
 	align-items: center;
 	gap: 0.5rem;
+	width: 100%;
 
 	.title,
 	.artist,
@@ -30,9 +28,9 @@
 		font-weight: 400;
 	}
 
-	.image-container {
-		width: 12rem;
-		height: 6rem;
+	.image {
+		aspect-ratio: 2 / 1;
+		width: 100%;
 		position: relative;
 
 		&::before,
@@ -75,6 +73,8 @@
 	}
 
 	.link {
+		width: 100%;
+
 		&:hover,
 		&:focus,
 		&:focus-within {
@@ -101,7 +101,7 @@
 	}
 
 	&.active:not(.loading) {
-		.image-container::before {
+		.image::before {
 			animation-name: gradient-animation;
 		}
 		.button {

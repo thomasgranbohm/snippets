@@ -18,6 +18,7 @@ const CustomDocument = () => (
 				href="https://fonts.googleapis.com/icon?family=Material+Icons"
 				rel="stylesheet"
 			/>
+			<link rel="manifest" href="manifest.json" />
 		</Head>
 
 		<body>

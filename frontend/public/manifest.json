@@ -1,0 +1,16 @@
+{
+	"background_color": "#fc772a",
+	"description": "A website for visualizing and uploading audio snippets",
+	"display": "fullscreen",
+	"icons": [
+		{
+			"src": "favicon.png",
+			"sizes": "256x256",
+			"type": "image/png"
+		}
+	],
+	"name": "Audio Snippets",
+	"short_name": "Snippets",
+	"start_url": "/",
+	"theme_color": "#fc772a"
+}

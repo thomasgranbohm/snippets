@@ -44,6 +44,10 @@ self.addEventListener("fetch", (event) => {
 					return response;
 				});
 			})
-			.catch((err) => console.error(err))
+			.catch((err) => {
+				if (err.message !== "canceled") {
+					console.error(err);
+				}
+			})
 	);
 });

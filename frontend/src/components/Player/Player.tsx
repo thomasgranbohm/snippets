@@ -27,7 +27,7 @@ const Player = ({ artist, bpm, duration, id, title }: PlayerProps) => {
 				download
 			>
 				<div
-					className={classes["image-container"]}
+					className={classes["image"]}
 					style={
 						{
 							"--source": `url("/api/snippets/${id}/image")`,
