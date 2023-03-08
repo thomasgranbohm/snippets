@@ -88,7 +88,7 @@ const UploadPage = () => {
 					name="audio"
 					id="audio"
 					className={classes["upload"]}
-					accept="audio/wav, audio/wave, audio/ogg, audio/mpeg, audio/mpeg3, audio/x-wav, audio/mp3"
+					accept="audio/wav, audio/wave, audio/ogg, audio/mpeg, audio/mpeg3, audio/x-wav, audio/mp3, audio/flac, audio/x-flac"
 					onInput={onInput}
 				/>
 				<div className={classes["information"]}>
