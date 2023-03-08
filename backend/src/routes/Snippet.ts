@@ -13,6 +13,8 @@ const FILE_TYPES = [
 	"audio/ogg",
 	"audio/mpeg",
 	"audio/mpeg3",
+	"audio/flac",
+	"audio/x-flac",
 ];
 
 const router = Router();

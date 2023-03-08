@@ -1,3 +1,4 @@
+import { AxiosError } from "axios";
 import { useRouter } from "next/router";
 import { useRef, useState } from "react";
 import { PUBLIC_API } from "../constants";
@@ -51,7 +52,20 @@ const UploadPage = () => {
 				return router.push("/");
 			}
 		} catch (error) {
-			alert("Something went wrong. Check the console.");
+			if (
+				"isAxiosError" in (error as any) &&
+				(error as AxiosError).isAxiosError
+			) {
+				const { response } = error as AxiosError;
+
+				if (response?.status === 401) {
+					alert("Invalid credentials");
+				} else if (response?.data) {
+					alert(response?.data.error);
+				}
+			} else {
+				alert("Something went wrong. Check the console.");
+			}
 			console.error(error);
 		}
 	};
