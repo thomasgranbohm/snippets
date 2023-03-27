@@ -6,10 +6,13 @@ services:
       - database
     env_file: ./config/backend.env
     environment:
-      - DATABASE_HOST=database
-      - NODE_ENV=production
+      DATABASE_HOST: database
+      DATABASE_USERNAME: ${DATABASE_USERNAME}
+      DATABASE_PASSWORD: ${DATABASE_PASSWORD}
+      NODE_ENV: production
     expose:
       - 1337
+    restart: unless-stopped
     volumes:
       - ./backend/snippets:/home/node/app/snippets
       - ./backend/uploads:/home/node/app/uploads
@@ -18,10 +21,11 @@ services:
     image: postgres
     environment:
       POSTGRES_DB: snippets
-      POSTGRES_USER: admin
-      POSTGRES_PASSWORD: password
+      POSTGRES_USER: ${DATABASE_USERNAME}
+      POSTGRES_PASSWORD: ${DATABASE_PASSSWORD}
     expose:
       - 5432
+    restart: unless-stopped
     volumes:
       - ./database:/var/lib/postgresql/data
   frontend:
@@ -34,6 +38,7 @@ services:
     expose:
       - 3000
     image: node:16
+    restart: unless-stopped
     user: node
     volumes:
       - ./frontend:/home/node/app
@@ -45,7 +50,8 @@ services:
       - frontend
     image: nginx
     ports:
-      - 9006:80
+      - ${PORT:-9000}:80
+    restart: unless-stopped
     volumes:
       - ./config/nginx.conf:/etc/nginx/nginx.conf
       - ./scripts/test-endpoint.sh:/test-endpoint.sh
