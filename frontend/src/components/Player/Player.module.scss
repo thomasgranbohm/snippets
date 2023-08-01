@@ -55,9 +55,7 @@
 			animation-iteration-count: infinite;
 			animation-timing-function: linear;
 
-			background: linear-gradient(90deg, #fc772a 50%, gray 50%);
-			background-position: 100% 50%;
-			background-size: 200%;
+			background: gray;
 		}
 
 		.text {
@@ -102,6 +100,10 @@
 
 	&.active:not(.loading) {
 		.image::before {
+			background: linear-gradient(90deg, #fc772a 50%, gray 50%);
+			background-position: 100% 50%;
+			background-size: 200%;
+
 			animation-name: gradient-animation;
 		}
 		.button {
