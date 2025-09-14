@@ -29,7 +29,7 @@ services:
     depends_on:
       - backend
     env_file: ./config/frontend.env
-    image: node:16
+    image: node:18
     ports:
       - 3000:3000
     user: node

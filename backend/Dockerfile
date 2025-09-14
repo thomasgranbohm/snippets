@@ -1,5 +1,5 @@
 # Dependencies stage
-FROM node:16 AS dependencies
+FROM node:18 AS dependencies
 
 RUN apt-get -y update && \
     apt-get -y install build-essential libcairo2-dev libpango1.0-dev libjpeg-dev libgif-dev librsvg2-dev
@@ -11,7 +11,7 @@ COPY package.json package-lock.json ./
 RUN npm ci
 
 # Build stage
-FROM node:16 AS build
+FROM node:18 AS build
 
 RUN apt-get -y update && \
     apt-get -y install build-essential libcairo2-dev libpango1.0-dev libjpeg-dev libgif-dev librsvg2-dev
@@ -27,7 +27,7 @@ RUN npm run build
 RUN npm ci --production
 
 # Start stage
-FROM node:16
+FROM node:18
 WORKDIR /home/node/app
 
 ENV NODE_ENV production

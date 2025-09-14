@@ -22,7 +22,7 @@ const Player = ({ artist, bpm, duration, id, title }: PlayerProps) => {
 			)}
 		>
 			<a
-				href={`/api/snippets/${id}/audio`}
+				href={`${process.env.NEXT_PUBLIC_BASE_PATH}/api/snippets/${id}/audio`}
 				className={classes["link"]}
 				download
 			>
@@ -30,7 +30,7 @@ const Player = ({ artist, bpm, duration, id, title }: PlayerProps) => {
 					className={classes["image"]}
 					style={
 						{
-							"--source": `url("/api/snippets/${id}/image")`,
+							"--source": `url("${process.env.NEXT_PUBLIC_BASE_PATH}/api/snippets/${id}/image")`,
 							"--duration": `${duration}ms`,
 						} as React.CSSProperties
 					}
